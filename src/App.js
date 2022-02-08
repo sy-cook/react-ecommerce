@@ -33,6 +33,8 @@ class App extends Component {
                 ...snapShot.data()
               }
             });
+
+          console.log(this.state);
         });
       } else {
         // If no userAuth, set currentUser state to `null`
