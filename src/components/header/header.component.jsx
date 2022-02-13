@@ -8,7 +8,10 @@ import { ReactComponent as Logo } from '../../assets/crown.svg';
 
 import './header.styles.scss';
 
-const Header = ( { currentUser } ) => (
+import CartIcon from '../cart-icon/cart-icon.component';
+import CartDropdown from '../cart-dropdown/cart-dropdown.component';
+
+const Header = ( { currentUser, hidden } ) => (
   <div className='header'>
     <Link className='logo-container' to='/'>
       <Logo className='logo' />
@@ -26,14 +29,20 @@ const Header = ( { currentUser } ) => (
         :
         <Link className='option' to='/signin'>SIGN IN</Link>
       }
+      <CartIcon />
     </div>
+    {
+      hidden ? null : <CartDropdown />
+    }
   </div>
 );
 
 // state here is the top-level root-reducer
-const mapStateToProps = state => ({
-  currentUser: state.user.currentUser
-})
+// destructure state to get `currentUser` and `hidden` props directly
+const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
+  currentUser,
+  hidden
+});
 
 // now we get the default `null` value being passed into Header as currentUser.
 export default connect(mapStateToProps)(Header); 
