@@ -12,16 +12,16 @@ const config = {
   measurementId: "G-Y5JNWZBK1Q"
 };
 
+firebase.initializeApp(config);
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
-  if (!userAuth) return; // If there is no userAuth (i.e., userAuth = `null`), return
-
-  // If userAuth exists, query firestore 
-
-  // documentReference:
-  const userRef = firestore.doc(`users/${userAuth.uid}`);
+  // If there is no userAuth (i.e., userAuth = `null`), return
+  // Else, query firestore 
+  if (!userAuth) return; 
   
-  // documentSnapshot:
-  const snapShot = await userRef.get();
+  const userRef = firestore.doc(`users/${userAuth.uid}`); // documentReference
+
+  const snapShot = await userRef.get(); // documentSnapshot
 
   if (!snapShot.exists) {
     // If the user doesn't exist, create a new user using the data from userAuth
@@ -44,7 +44,41 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-firebase.initializeApp(config);
+export const addCollectionandDocuments = async (collectionKey, objectsToAdd) => {
+  const collectionRef = firestore.collection(collectionKey);
+  console.log(collectionRef);
+
+  const batch = firestore.batch();
+  // loop over objectsToAdd array
+  // .forEach() does not return a new array, unlike with .map()
+  objectsToAdd.forEach(obj => {
+    const newDocRef = collectionRef.doc(); // get a new document collection and randomly generate an id for it
+    batch.set(newDocRef, obj); // instead of newDocRef.set() to batch the calls together
+  });
+
+  // fire off the batch call
+  // returns a Promise, and if it succeeds, will resolve to a null value
+  return await batch.commit()
+};
+
+// convert array to object
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()), // pass it some string, and converts to characters that a URL can read
+      id: doc.id,
+      title,
+      items
+    };
+  });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection; // { hats: { ... }, jackets: { ... }, ... }
+    return accumulator;
+  }, {})
+}
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();

@@ -18,7 +18,7 @@ import { selectCurrentUser } from '../../redux/user/user.selector';
 const Header = ( { currentUser, hidden } ) => (
   <HeaderContainer>
     <LogoContainer to='/'>
-      <LogoContainer />
+      <Logo className='logo' />
     </LogoContainer>
     <OptionsContainer>
       <OptionLink to='/shop'>
@@ -29,7 +29,7 @@ const Header = ( { currentUser, hidden } ) => (
       </OptionLink>
       {
         currentUser ?
-        <OptionLink as='div' onClick={() => auth.signOut()}>SIGN OUT</OptionLink>
+        <OptionLink to='' as='div' onClick={() => auth.signOut()}>SIGN OUT</OptionLink>
         :
         <OptionLink to='/signin'>SIGN IN</OptionLink>
       }
